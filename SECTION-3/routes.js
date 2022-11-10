@@ -17,7 +17,7 @@ const requestHandler = (req, res) => {
       body.push(chunk);
       console.log(chunk);
     });
-    req.on("end", () => {
+    return req.on("end", () => {
       const parsedBody = Buffer.concat(body).toString();
       const message = parsedBody.split("=")[1];
       fs.writeFile("message.txt", message, (err) => {
@@ -27,12 +27,12 @@ const requestHandler = (req, res) => {
       });
     });
   }
-  console.log("this happens, but shouldn't");
-  //   res.setHeader("Content-Type", "text/html");
-  //   res.write("<html>");
-  //   res.write("<body>Hello!</body>");
-  //   res.write("</html>");
-  //   res.end();
+
+  res.setHeader("Content-Type", "text/html");
+  res.write("<html>");
+  res.write("<body>Hello!</body>");
+  res.write("</html>");
+  res.end();
 };
 
 module.exports = {
