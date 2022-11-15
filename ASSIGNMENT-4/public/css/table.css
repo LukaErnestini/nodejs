@@ -1,0 +1,8 @@
+td {
+  font-weight: bold;
+}
+
+.img-placeholder {
+  height: 64px;
+  display: inline-block;
+}

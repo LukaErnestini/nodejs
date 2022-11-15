@@ -1,0 +1,28 @@
+<%- include('includes/head.ejs') %>
+<link rel="stylesheet" href="/css/table.css" />
+</head>
+
+<body>
+    <%- include('includes/navigation.ejs') %>
+    <main>
+        <table>
+            <tbody>
+                <%  weekDays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+                for( let i = 0; i < weekDays.length; i++ ) { %>
+                <tr>
+                    <td> <%= weekDays[i] %> </td>
+                    <td>
+
+                        <% for( let j=0; j < pomidoriWeek[i]; j++ ) { %>
+                        <img src="https://pngimg.com/uploads/tomato/tomato_PNG12510.png" alt="Picture of a pomidor"
+                            height="64px">
+                        <% } %>
+                        <div class="img-placeholder"><span></span></div>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </main>
+
+    <%- include('includes/end.ejs') %>
