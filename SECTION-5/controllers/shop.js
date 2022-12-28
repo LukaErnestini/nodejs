@@ -20,3 +20,10 @@ exports.getIndex = (req, res, next) => {
     path: "/index",
   });
 };
+
+exports.getOrders = (req, res, next) => {
+  res.render("shop/orders", {
+    title: "Orders",
+    path: "/orders",
+  });
+};
