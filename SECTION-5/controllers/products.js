@@ -25,8 +25,12 @@ exports.postAddProduct = (req, res, next) => {
   const price = req.body.price;
   console.log(price);
   const product = new Product(null, title, imageUrl, description, price);
-  product.save();
-  res.redirect("/");
+  product
+    .save()
+    .then(() => {
+      res.redirect("/");
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -66,22 +70,30 @@ exports.postDeleteProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll((products) => {
-    res.render("shop/product-list", {
-      prods: products,
-      title: "All Products",
-      path: "/products",
+  Product.fetchAll()
+    .then(([rows, fieldData]) => {
+      res.render("shop/product-list", {
+        prods: rows,
+        title: "All Products",
+        path: "/products",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
     });
-  });
 };
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.findById(prodId, (product) => {
-    res.render("shop/product-detail", {
-      product: product,
-      title: product.title,
-      path: "/products",
+  Product.findById(prodId)
+    .then(([product]) => {
+      res.render("shop/product-detail", {
+        product: product[0],
+        title: product[0].title,
+        path: "/products",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
     });
-  });
 };

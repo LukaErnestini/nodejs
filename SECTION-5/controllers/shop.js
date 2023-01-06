@@ -46,10 +46,17 @@ exports.getCheckout = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  res.render("shop/index", {
-    title: "Index",
-    path: "/index",
-  });
+  Product.fetchAll()
+    .then(([rows, fieldData]) => {
+      res.render("shop/index", {
+        prods: rows,
+        title: "Shop",
+        path: "/index",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 exports.getOrders = (req, res, next) => {
