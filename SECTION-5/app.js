@@ -6,7 +6,7 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
 const miscController = require("./controllers/misc");
-const mongoConnect = require("./util/database");
+const { mongoConnect } = require("./util/database");
 
 const app = express();
 
@@ -28,6 +28,7 @@ app.use((req, res, next) => {
   //   .catch((err) => {
   //     console.log(err);
   //   });
+  next();
 });
 
 app.use("/admin", adminRoutes);

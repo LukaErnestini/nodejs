@@ -7,7 +7,7 @@
     <%- include('../includes/navigation.ejs') %>
 
     <main>
-        <form class="product-form" action="/admin/<% if (editing === 'true') { %>edit-product/<%= product.id %> 
+        <form class="product-form" action="/admin/<% if (editing === 'true') { %>edit-product/<%= product._id %> 
             <% } else { %>add-product<% } %>" method="POST">
             <div class="form-control">
                 <label for="title">Title</label>
