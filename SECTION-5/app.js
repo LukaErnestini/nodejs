@@ -6,19 +6,35 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
 const miscController = require("./controllers/misc");
-const db = require("./util/database");
+const mongoConnect = require("./util/database");
 
 const app = express();
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
+// MIDDLEWARES - these run when we get incomming request
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
+
+app.use((req, res, next) => {
+  // User.findByPk(1)
+  //   .then((user) => {
+  //     req.user = user;
+  //     // so that we have the user available on all requests
+  //     // it also has all the sequelize methods, it's not just a JS object
+  //     next();
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //   });
+});
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
 app.use(miscController.get404);
 
-app.listen(3000);
+mongoConnect(() => {
+  app.listen(3000);
+});

@@ -3,5 +3,25 @@
 
 <body>
     <%- include('../includes/navigation.ejs') %>
-    <h1>ORDERS</h1>
+    <main>
+        <% if (orders.length <= 0) { %>
+        <h1>No orders ...</h1>
+        <% } else { %>
+        <ul>
+            <% orders.forEach(order => { %>
+            <li>
+
+                <h1># <%= order.id %> </h1>
+                <ul>
+                    <% //console.log(JSON.stringify(order, null, 4)); %>
+                    <% order.products.forEach(p => { %>
+                    <li><%= p.title %> (<%= p.orderItem.quantity %>)</li>
+                    <% }) %>
+                </ul>
+            </li>
+
+            <% }) %>
+        </ul>
+        <% } %>
+    </main>
     <%- include('../includes/end.ejs') %>
