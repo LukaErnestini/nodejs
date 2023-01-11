@@ -34,8 +34,8 @@ class User {
       .collection(collName)
       .find({ _id: new mongodb.ObjectId(id) })
       .next()
-      .then((product) => {
-        return product;
+      .then((user) => {
+        return user;
       })
       .catch((err) => {
         console.log(err);

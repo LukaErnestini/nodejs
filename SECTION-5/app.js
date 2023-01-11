@@ -19,17 +19,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-  // User.findByPk(1)
-  //   .then((user) => {
-  //     req.user = user;
-  //     // so that we have the user available on all requests
-  //     // it also has all the sequelize methods, it's not just a JS object
-  //     next();
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
-  next();
+  User.fetchById("63be82e9be8dd418a0c577d8")
+    .then((user) => {
+      req.user = user;
+      // so that we have the user available on all requests
+      next();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 app.use("/admin", adminRoutes);
