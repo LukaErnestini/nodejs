@@ -69,8 +69,6 @@ class User {
           return {
             ...p,
             quantity: this.cart.items.find((i) => {
-              console.log(i.productId);
-              console.log(p._id);
               return i.productId.toString() === p._id.toString();
             }).quantity,
           };
