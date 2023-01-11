@@ -55,6 +55,32 @@ class User {
       );
   }
 
+  getCart() {
+    const db = getDb();
+    const productIds = this.cart.items.map((item) => {
+      return item.productId;
+    });
+    return db
+      .collection("products")
+      .find({ _id: { $in: productIds } })
+      .toArray()
+      .then((products) => {
+        return products.map((p) => {
+          return {
+            ...p,
+            quantity: this.cart.items.find((i) => {
+              console.log(i.productId);
+              console.log(p._id);
+              return i.productId.toString() === p._id.toString();
+            }).quantity,
+          };
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
   static build(user) {
     let cart = user.cart || null;
     let _id = user._id || null;

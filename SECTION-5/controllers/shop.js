@@ -3,9 +3,6 @@ const Product = require("../models/product.js");
 exports.getCart = (req, res, next) => {
   req.user
     .getCart()
-    .then((cart) => {
-      return cart.getProducts();
-    })
     .then((products) => {
       res.render("shop/cart", {
         title: "Cart",
