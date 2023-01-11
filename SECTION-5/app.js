@@ -7,6 +7,7 @@ const shopRoutes = require("./routes/shop");
 
 const miscController = require("./controllers/misc");
 const { mongoConnect } = require("./util/database");
+const User = require("./models/user");
 
 const app = express();
 
