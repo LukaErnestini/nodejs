@@ -3,7 +3,6 @@ const Product = require("../models/product");
 exports.getProducts = (req, res, next) => {
   Product.find()
     .then((products) => {
-      console.log(products);
       res.render("shop/product-list", {
         prods: products,
         title: "All Products",
@@ -39,7 +38,7 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.getProductsAdmin = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then((products) => {
       res.render("admin/products", {
         prods: products,
@@ -80,7 +79,7 @@ exports.getEditProduct = (req, res, next) => {
     return res.redirect("/");
   }
   const prodId = req.params.productId;
-  Product.fetchById(prodId)
+  Product.findById(prodId)
     .then((product) => {
       if (!product) {
         return res.redirect("/");
@@ -104,14 +103,13 @@ exports.postEditProduct = (req, res, next) => {
   const price = req.body.price;
   const prodId = req.params.productId;
 
-  Product.fetchById(prodId)
+  Product.findById(prodId)
     .then((product) => {
-      const updatedProduct = Product.build(product);
-      updatedProduct.title = title;
-      updatedProduct.imageUrl = imageUrl;
-      updatedProduct.description = description;
-      updatedProduct.price = price;
-      return updatedProduct.save();
+      product.title = title;
+      product.imageUrl = imageUrl;
+      product.description = description;
+      product.price = price;
+      return product.save();
     })
     .then(() => {
       console.log("Updated product");
