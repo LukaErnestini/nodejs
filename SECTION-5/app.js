@@ -1,12 +1,12 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
+const mongoose = require("mongoose");
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
 const miscController = require("./controllers/misc");
-const { mongoConnect } = require("./util/database");
 const User = require("./models/user");
 
 const app = express();
@@ -35,7 +35,13 @@ app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
 app.use(miscController.get404);
-
-mongoConnect(() => {
-  app.listen(3000);
-});
+-mongoose
+  .connect(
+    "mongodb+srv://adminluka:wDxbjqiP0HBjtqfpjUI0@nodejsudemycluster.dn5jdsr.mongodb.net/shop?retryWrites=true&w=majority"
+  )
+  .then(() => {
+    app.listen(3000);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
