@@ -2,12 +2,12 @@ const Product = require("../models/product.js");
 
 exports.getCart = (req, res, next) => {
   req.user
-    .getCart()
-    .then((products) => {
+    .populate("cart.items.productId")
+    .then((user) => {
       res.render("shop/cart", {
         title: "Cart",
         path: "/cart",
-        products: products,
+        products: user.cart.items,
       });
     })
     .catch((err) => {
@@ -17,7 +17,7 @@ exports.getCart = (req, res, next) => {
 
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.fetchById(prodId)
+  Product.findById(prodId)
     .then((product) => {
       return req.user.addToCart(product);
     })
