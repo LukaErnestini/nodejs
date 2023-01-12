@@ -27,40 +27,6 @@ exports.postCart = (req, res, next) => {
     .catch((err) => {
       console.log(err);
     });
-  // let fetchedCart;
-  // let newQuantity = 1;
-  // req.user
-  //   .getCart()
-  //   .then((cart) => {
-  //     fetchedCart = cart;
-  //     return cart.getProducts({ where: { id: prodId } });
-  //   })
-  //   .then((products) => {
-  //     let productInCart;
-  //     if (products.length > 0) {
-  //       productInCart = products[0];
-  //     }
-  //     if (productInCart) {
-  //       console.log("Product already in cart, increasing quantity");
-  //       const oldQuantity = productInCart.cartItem.quantity;
-  //       newQuantity = oldQuantity + 1;
-  //       return productInCart;
-  //     } else {
-  //       return Product.findByPk(prodId);
-  //     }
-  //   })
-  //   .then((product) => {
-  //     return fetchedCart.addProduct(product, {
-  //       through: { quantity: newQuantity },
-  //     });
-  //   })
-  //   .then(() => {
-  //     console.log("redirecting ...");
-  //     res.redirect("/cart");
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
@@ -100,13 +66,13 @@ exports.getIndex = (req, res, next) => {
 
 exports.getOrders = (req, res, next) => {
   req.user
-    .getOrders()
-    .then((orders) => {
-      console.log(orders[0].items[0]);
+    .populate("orders.items.productId")
+    .then((user) => {
+      console.log(user.orders[0].items);
       res.render("shop/orders", {
         title: "Orders",
         path: "/orders",
-        orders,
+        orders: user.orders,
       });
     })
     .catch((err) => {});
@@ -114,7 +80,7 @@ exports.getOrders = (req, res, next) => {
 
 exports.postOrder = (req, res, next) => {
   req.user
-    .addOrder()
+    .createOrder()
     .then(() => {
       res.redirect("/orders");
     })

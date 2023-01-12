@@ -23,6 +23,20 @@ const userSchema = new Schema({
       },
     ],
   },
+  orders: [
+    {
+      items: [
+        {
+          productId: {
+            type: Schema.Types.ObjectId,
+            ref: "Product",
+            required: true,
+          },
+          quantity: { type: Number, required: true },
+        },
+      ],
+    },
+  ],
 });
 
 userSchema.methods.addToCart = function (product) {
@@ -50,6 +64,31 @@ userSchema.methods.removeFromCart = function (id) {
     return i.productId.toString() !== id;
   });
   this.cart.items = itemsAfter;
+  return this.save();
+};
+
+userSchema.methods.createOrder = function () {
+  //     return this.getCart()
+  //       .then((products) => {
+  //         const order = {
+  //           items: products,
+  //           user: {
+  //             _id: new mongodb.ObjectId(this._id),
+  //             name: this.username,
+  //           },
+  //         };
+  //         return db.collection("orders").insertOne(order);
+  //       })
+  //       .then((response) => {
+  //         console.log(response);
+  //         this.cart = { items: [] };
+  //         return db
+  //           .collection(_COLL_NAME)
+  //           .updateOne({ _id: this._id }, { $set: { cart: this.cart } });
+  //       });
+
+  this.orders.push(this.cart);
+  this.cart.items = [];
   return this.save();
 };
 
