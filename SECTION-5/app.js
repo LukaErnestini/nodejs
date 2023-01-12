@@ -19,16 +19,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-  User.fetchById("63be82e9be8dd418a0c577d8")
-    .then((user) => {
-      req.user = User.build(user);
-      // so that we have the user available on all requests
+  // User.fetchById("63be82e9be8dd418a0c577d8")
+  //   .then((user) => {
+  //     req.user = User.build(user);
+  //     // so that we have the user available on all requests
 
-      next();
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  //     next();
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //   });
+  next();
 });
 
 app.use("/admin", adminRoutes);
