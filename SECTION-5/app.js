@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
 const mongoose = require("mongoose");
+mongoose.set("strictQuery", true);
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
@@ -36,7 +37,7 @@ app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
 app.use(miscController.get404);
--mongoose
+mongoose
   .connect(
     "mongodb+srv://adminluka:wDxbjqiP0HBjtqfpjUI0@nodejsudemycluster.dn5jdsr.mongodb.net/shop?retryWrites=true&w=majority"
   )
