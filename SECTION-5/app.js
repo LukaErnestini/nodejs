@@ -20,17 +20,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-  // User.fetchById("63be82e9be8dd418a0c577d8")
-  //   .then((user) => {
-  //     req.user = User.build(user);
-  //     // so that we have the user available on all requests
-
-  //     next();
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
-  next();
+  User.findById("63c020349943508002ec1a40")
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 app.use("/admin", adminRoutes);
@@ -42,6 +39,18 @@ mongoose
     "mongodb+srv://adminluka:wDxbjqiP0HBjtqfpjUI0@nodejsudemycluster.dn5jdsr.mongodb.net/shop?retryWrites=true&w=majority"
   )
   .then(() => {
+    User.findOne().then((user) => {
+      if (!user) {
+        const user = new User({
+          username: "luka",
+          email: "luka.ernestini@gmail.com",
+          cart: {
+            items: [],
+          },
+        });
+        user.save();
+      }
+    });
     app.listen(3000);
   })
   .catch((err) => {
