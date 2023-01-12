@@ -1,3 +1,27 @@
+const { Decimal128 } = require("mongodb");
+const mongoose = require("mongoose");
+
+const Schema = mongoose.Schema;
+
+const productSchema = new Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Decimal128,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  imageUrl: {
+    type: String,
+    required: true,
+  },
+});
+
 // const { getDb } = require("../util/database");
 // const mongodb = require("mongodb");
 
