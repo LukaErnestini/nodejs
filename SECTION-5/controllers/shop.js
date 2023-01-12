@@ -85,7 +85,7 @@ exports.getCheckout = (req, res, next) => {
 exports.getIndex = (req, res, next) => {
   // console.log(Object.getOwnPropertyNames(Object.getPrototypeOf(req.user)));
 
-  Product.fetchAll()
+  Product.find()
     .then((products) => {
       res.render("shop/index", {
         prods: products,

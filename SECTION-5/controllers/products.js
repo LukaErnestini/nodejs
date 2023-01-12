@@ -1,5 +1,20 @@
 const Product = require("../models/product");
 
+exports.getProducts = (req, res, next) => {
+  Product.find()
+    .then((products) => {
+      console.log(products);
+      res.render("shop/product-list", {
+        prods: products,
+        title: "All Products",
+        path: "/products",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
     title: "Add Product",
@@ -96,20 +111,6 @@ exports.postDeleteProduct = (req, res, next) => {
     .then(() => {
       console.log("Destroyed product");
       res.redirect("/admin/products");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
-exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
-    .then((products) => {
-      res.render("shop/product-list", {
-        prods: products,
-        title: "All Products",
-        path: "/products",
-      });
     })
     .catch((err) => {
       console.log(err);
