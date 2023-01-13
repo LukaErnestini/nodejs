@@ -9,7 +9,7 @@
         <ul class="cart__item-list">
             <% products.forEach(p => { %>
             <li class="cart__item">
-                <% console.log('\n\nitem: ', JSON.stringify(p, null, 4)); %>
+                <% //console.log('\n\nitem: ', JSON.stringify(p, null, 4)); %>
                 <p><%= p.productId.title %> (<%= p.quantity %>)</p>
                 <form action="/cart-delete-item" method="post">
                     <input type="hidden" name="productId" value="<%= p.productId._id %>">

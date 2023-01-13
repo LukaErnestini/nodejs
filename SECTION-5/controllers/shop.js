@@ -66,9 +66,8 @@ exports.getIndex = (req, res, next) => {
 
 exports.getOrders = (req, res, next) => {
   req.user
-    .populate("orders.items.productId")
+    .populate("orders.orderId")
     .then((user) => {
-      console.log(user.orders[0].items);
       res.render("shop/orders", {
         title: "Orders",
         path: "/orders",

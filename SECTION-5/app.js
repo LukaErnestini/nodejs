@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-  User.findById("63c020349943508002ec1a40")
+  User.findById("63c137193bd71229a1bd674a")
     .then((user) => {
       req.user = user;
       next();
@@ -47,6 +47,7 @@ mongoose
           cart: {
             items: [],
           },
+          orders: [],
         });
         user.save();
       }

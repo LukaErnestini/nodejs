@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
-
 const Schema = mongoose.Schema;
+
+const Order = require("./order");
 
 const userSchema = new Schema({
   username: {
@@ -25,16 +26,11 @@ const userSchema = new Schema({
   },
   orders: [
     {
-      items: [
-        {
-          productId: {
-            type: Schema.Types.ObjectId,
-            ref: "Product",
-            required: true,
-          },
-          quantity: { type: Number, required: true },
-        },
-      ],
+      orderId: {
+        type: Schema.Types.ObjectId,
+        ref: "Order",
+        required: true,
+      },
     },
   ],
 });
@@ -43,7 +39,6 @@ userSchema.methods.addToCart = function (product) {
   const cartProductIndex = this.cart.items.findIndex((cp) => {
     return cp.productId.equals(product._id);
   });
-  console.log(cartProductIndex);
   let newQuantity = 1;
   const updatedCartItems = [...this.cart.items];
   if (cartProductIndex >= 0) {
@@ -68,28 +63,24 @@ userSchema.methods.removeFromCart = function (id) {
 };
 
 userSchema.methods.createOrder = function () {
-  //     return this.getCart()
-  //       .then((products) => {
-  //         const order = {
-  //           items: products,
-  //           user: {
-  //             _id: new mongodb.ObjectId(this._id),
-  //             name: this.username,
-  //           },
-  //         };
-  //         return db.collection("orders").insertOne(order);
-  //       })
-  //       .then((response) => {
-  //         console.log(response);
-  //         this.cart = { items: [] };
-  //         return db
-  //           .collection(_COLL_NAME)
-  //           .updateOne({ _id: this._id }, { $set: { cart: this.cart } });
-  //       });
-
-  this.orders.push(this.cart);
-  this.cart.items = [];
-  return this.save();
+  return this.populate("cart.items.productId").then(() => {
+    const relabeledCartItems = this.cart.items.map(
+      ({ productId, quantity }) => ({
+        product: productId.toObject(),
+        // toObject() because if we pass mongoose instance only the _id gets saved as reference
+        quantity,
+      })
+    );
+    const newOrder = Order({
+      user: { userId: this._id, username: this.username },
+      items: relabeledCartItems,
+    });
+    this.orders.push({ orderId: newOrder._id });
+    this.cart.items = [];
+    return newOrder.save().then(() => {
+      this.save();
+    });
+  });
 };
 
 module.exports = mongoose.model("User", userSchema);

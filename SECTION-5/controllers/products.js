@@ -5,7 +5,6 @@ exports.getProducts = (req, res, next) => {
     // .select("title price -_id")
     // .populate("userId", "username")
     .then((products) => {
-      console.log(products);
       res.render("shop/product-list", {
         prods: products,
         title: "All Products",
