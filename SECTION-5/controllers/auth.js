@@ -12,18 +12,31 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.postLogin = (req, res, next) => {
-  User.findById("63c185182357e64ce239727e")
+  const email = req.body.email;
+  const password = req.body.password;
+  User.findOne({ email: email })
     .then((user) => {
-      req.session.user = user;
-      req.session.isLoggedIn = true;
-      req.session.save((err) => {
-        // save is called to avoid redirecting, before the session is stored into the db
-        console.log(err);
-        res.redirect("/");
+      if (!user) {
+        console.log("No user with that email");
+        return res.redirect("/login");
+      }
+      bcrypt.compare(password, user.password).then((equal) => {
+        if (equal) {
+          req.session.user = user;
+          req.session.isLoggedIn = true;
+          return req.session.save((err) => {
+            // save is called to avoid redirecting, before the session is stored into the db
+            console.log(err);
+            res.redirect("/");
+          });
+        }
+        console.log("Invalid password");
+        res.redirect("/login");
       });
     })
     .catch((err) => {
       console.log(err);
+      res.redirect("/login");
     });
 };
 
