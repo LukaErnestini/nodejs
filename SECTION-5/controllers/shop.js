@@ -1,7 +1,7 @@
 const Product = require("../models/product.js");
 
 exports.getCart = (req, res, next) => {
-  req.session.user
+  req.user
     .populate("cart.items.productId")
     .then((user) => {
       res.render("shop/cart", {
@@ -20,7 +20,7 @@ exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
   Product.findById(prodId)
     .then((product) => {
-      return req.session.user.addToCart(product);
+      return req.user.addToCart(product);
     })
     .then(() => {
       res.redirect("/cart");
@@ -32,7 +32,7 @@ exports.postCart = (req, res, next) => {
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  req.session.user
+  req.user
     .removeFromCart(prodId)
     .then(() => {
       res.redirect("/cart");
@@ -51,7 +51,7 @@ exports.getCheckout = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  // console.log(Object.getOwnPropertyNames(Object.getPrototypeOf(req.session.user)));
+  // console.log(Object.getOwnPropertyNames(Object.getPrototypeOf(req.user)));
 
   Product.find()
     .then((products) => {
@@ -68,8 +68,7 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  console.log(req.session.user);
-  req.session.user
+  req.user
     .populate("orders.orderId")
     .then((user) => {
       res.render("shop/orders", {
@@ -83,7 +82,7 @@ exports.getOrders = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
-  req.session.user
+  req.user
     .createOrder()
     .then(() => {
       res.redirect("/orders");

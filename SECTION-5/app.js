@@ -37,16 +37,20 @@ app.use(
   })
 );
 
-// app.use((req, res, next) => {
-//   User.findById("63c137193bd71229a1bd674a")
-//     .then((user) => {
-//       req.user = user;
-//       next();
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// });
+app.use((req, res, next) => {
+  if (req.session.isLoggedIn) {
+    User.findById(req.session.user._id)
+      .then((user) => {
+        req.user = user;
+        next();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else {
+    next();
+  }
+});
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
