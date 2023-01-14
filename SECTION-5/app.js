@@ -60,19 +60,6 @@ app.use(miscController.get404);
 mongoose
   .connect(MONGODB_URI)
   .then(() => {
-    User.findOne().then((user) => {
-      if (!user) {
-        const user = new User({
-          username: "luka",
-          email: "luka.ernestini@gmail.com",
-          cart: {
-            items: [],
-          },
-          orders: [],
-        });
-        user.save();
-      }
-    });
     app.listen(3000);
   })
   .catch((err) => {

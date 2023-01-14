@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const bcrypt = require("bcryptjs");
 
 exports.getLogin = (req, res, next) => {
   //const isLoggedIn =
@@ -41,5 +42,33 @@ exports.getSignup = (req, res, next) => {
 };
 
 exports.postSignup = (req, res, next) => {
-  //todo
+  const email = req.body.email;
+  const password = req.body.password;
+  const confirmPass = req.body.confirmPassword;
+  User.findOne({ email: email })
+    .then((userDoc) => {
+      if (userDoc) {
+        console.log("That email is taken.");
+        return res.redirect("/signup");
+      }
+      return bcrypt
+        .hash(password, 12)
+        .then((hashedPassword) => {
+          const user = new User({
+            email: email,
+            password: hashedPassword,
+            cart: {
+              items: [],
+            },
+            orders: [],
+          });
+          return user.save();
+        })
+        .then(() => {
+          res.redirect("/login");
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
