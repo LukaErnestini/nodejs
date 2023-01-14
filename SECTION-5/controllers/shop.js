@@ -8,6 +8,7 @@ exports.getCart = (req, res, next) => {
         title: "Cart",
         path: "/cart",
         products: user.cart.items,
+        isAuthenticated: req.isLoggedIn,
       });
     })
     .catch((err) => {
@@ -45,6 +46,7 @@ exports.getCheckout = (req, res, next) => {
   res.render("shop/checkout", {
     title: "Checkout",
     path: "/checkout",
+    isAuthenticated: req.isLoggedIn,
   });
 };
 
@@ -57,6 +59,7 @@ exports.getIndex = (req, res, next) => {
         prods: products,
         title: "Shop",
         path: "/index",
+        isAuthenticated: req.isLoggedIn,
       });
     })
     .catch((err) => {
@@ -72,6 +75,7 @@ exports.getOrders = (req, res, next) => {
         title: "Orders",
         path: "/orders",
         orders: user.orders,
+        isAuthenticated: req.isLoggedIn,
       });
     })
     .catch((err) => {});
