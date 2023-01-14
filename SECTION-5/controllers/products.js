@@ -9,7 +9,7 @@ exports.getProducts = (req, res, next) => {
         prods: products,
         title: "All Products",
         path: "/products",
-        isAuthenticated: req.isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {
@@ -25,7 +25,7 @@ exports.getProduct = (req, res, next) => {
         product: product,
         title: product.title,
         path: "/products",
-        isAuthenticated: req.isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {
@@ -38,7 +38,7 @@ exports.getAddProduct = (req, res, next) => {
     title: "Add Product",
     path: "/admin/add-product",
     editing: "false",
-    isAuthenticated: req.isLoggedIn,
+    isAuthenticated: req.session.isLoggedIn,
   });
 };
 
@@ -49,7 +49,7 @@ exports.getProductsAdmin = (req, res, next) => {
         prods: products,
         title: "All Products",
         path: "/admin/products",
-        isAuthenticated: req.isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {
@@ -62,7 +62,7 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const description = req.body.description;
   const price = req.body.price;
-  const userId = req.user;
+  const userId = req.session.user;
   console.log(userId);
   const product = new Product({
     title,
@@ -98,7 +98,7 @@ exports.getEditProduct = (req, res, next) => {
         path: "/admin/edit-product",
         product: product,
         editing: editMode,
-        isAuthenticated: req.isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {

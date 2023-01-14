@@ -1,14 +1,14 @@
 const Product = require("../models/product.js");
 
 exports.getCart = (req, res, next) => {
-  req.user
+  req.session.user
     .populate("cart.items.productId")
     .then((user) => {
       res.render("shop/cart", {
         title: "Cart",
         path: "/cart",
         products: user.cart.items,
-        isAuthenticated: req.isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {
@@ -20,7 +20,7 @@ exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
   Product.findById(prodId)
     .then((product) => {
-      return req.user.addToCart(product);
+      return req.session.user.addToCart(product);
     })
     .then(() => {
       res.redirect("/cart");
@@ -32,7 +32,7 @@ exports.postCart = (req, res, next) => {
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  req.user
+  req.session.user
     .removeFromCart(prodId)
     .then(() => {
       res.redirect("/cart");
@@ -46,12 +46,12 @@ exports.getCheckout = (req, res, next) => {
   res.render("shop/checkout", {
     title: "Checkout",
     path: "/checkout",
-    isAuthenticated: req.isLoggedIn,
+    isAuthenticated: req.session.isLoggedIn,
   });
 };
 
 exports.getIndex = (req, res, next) => {
-  // console.log(Object.getOwnPropertyNames(Object.getPrototypeOf(req.user)));
+  // console.log(Object.getOwnPropertyNames(Object.getPrototypeOf(req.session.user)));
 
   Product.find()
     .then((products) => {
@@ -59,7 +59,7 @@ exports.getIndex = (req, res, next) => {
         prods: products,
         title: "Shop",
         path: "/index",
-        isAuthenticated: req.isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {
@@ -68,21 +68,22 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  req.user
+  console.log(req.session.user);
+  req.session.user
     .populate("orders.orderId")
     .then((user) => {
       res.render("shop/orders", {
         title: "Orders",
         path: "/orders",
         orders: user.orders,
-        isAuthenticated: req.isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {});
 };
 
 exports.postOrder = (req, res, next) => {
-  req.user
+  req.session.user
     .createOrder()
     .then(() => {
       res.redirect("/orders");
