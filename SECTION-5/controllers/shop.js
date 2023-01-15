@@ -52,14 +52,12 @@ exports.getCheckout = (req, res, next) => {
 
 exports.getIndex = (req, res, next) => {
   // console.log(Object.getOwnPropertyNames(Object.getPrototypeOf(req.user)));
-
   Product.find()
     .then((products) => {
       res.render("shop/index", {
         prods: products,
         title: "Shop",
         path: "/index",
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => {
