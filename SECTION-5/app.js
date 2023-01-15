@@ -38,20 +38,11 @@ app.use(
     store: store,
   })
 );
-app.use((req, res, next) => {
-  req.test = "I am set";
-  next();
-});
-app.use((req, res, next) => {
-  console.log("I am ran");
-  next();
-});
 app.use(csrf("123456789iamasecrethfjsneuchlook"));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
   if (req.session.isLoggedIn) {
-    console.log("isLoggedIn, yes");
     User.findById(req.session.user._id)
       .then((user) => {
         req.user = user;
@@ -61,13 +52,11 @@ app.use((req, res, next) => {
         console.log(err);
       });
   } else {
-    console.log("isNotLoggedIn, no");
     next();
   }
 });
 
 app.use((req, res, next) => {
-  console.log(req.test);
   if (req.method === "GET") res.locals.csrfToken = req.csrfToken();
   res.locals.isAuthenticated = req.session.isLoggedIn;
   next();
