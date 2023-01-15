@@ -7,6 +7,7 @@ const session = require("express-session");
 const mongoDBStore = require("connect-mongodb-session")(session);
 const csrf = require("tiny-csrf");
 const cookieParser = require("cookie-parser");
+const flash = require("connect-flash");
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
@@ -40,6 +41,7 @@ app.use(
 );
 app.use(csrf("123456789iamasecrethfjsneuchlook"));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(flash());
 
 app.use((req, res, next) => {
   if (req.session.isLoggedIn) {
@@ -59,6 +61,7 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   if (req.method === "GET") res.locals.csrfToken = req.csrfToken();
   res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.errorMessage = req.flash("error")[0];
   next();
 });
 
