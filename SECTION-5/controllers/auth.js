@@ -36,7 +36,7 @@ exports.postLogin = (req, res, next) => {
           req.session.isLoggedIn = true;
           return req.session.save((err) => {
             // save is called to avoid redirecting, before the session is stored into the db
-            console.log(err);
+            if (err) console.log(err);
             res.redirect("/");
           });
         }
@@ -52,7 +52,7 @@ exports.postLogin = (req, res, next) => {
 
 exports.postLogout = (req, res, next) => {
   req.session.destroy((err) => {
-    console.log(err);
+    if (err) console.log(err);
     res.redirect("/");
   });
 };
@@ -151,4 +151,49 @@ exports.postReset = (req, res, next) => {
         console.log(err);
       });
   });
+};
+
+exports.getNewPassword = (req, res, next) => {
+  res.render("auth/new-password", {
+    title: "Reset Password",
+    path: "/new-password",
+    token: req.params.token,
+  });
+};
+
+exports.postNewPassword = (req, res, next) => {
+  newPassword = req.body.password;
+  const token = req.params.token;
+  User.findOne({
+    // There is a very small chance that some other user's token was generated to be the same ...
+    resetToken: token,
+    resetTokenExpiration: { $gt: Date.now() },
+  })
+    .then((user) => {
+      if (!user) {
+        req.flash(
+          "error",
+          "Invalid password reset request. Either timed out or wrong token."
+        );
+        return res.redirect("/reset");
+      }
+      return bcrypt
+        .hash(newPassword, 12)
+        .then((hashedPassword) => {
+          user.password = hashedPassword;
+          user.resetToken = null;
+          user.resetTokenExpiration = null;
+          return user.save();
+        })
+        .then((user) => {
+          req.flash(
+            "info",
+            "Password has been reset. You can now login with your new password."
+          );
+          res.redirect("/login");
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
