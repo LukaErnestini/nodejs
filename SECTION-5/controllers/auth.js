@@ -1,5 +1,15 @@
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.mailtrap.io",
+  port: 2525,
+  auth: {
+    user: "18605c1fdfeb85",
+    pass: "3433a6b1b5f34a",
+  },
+});
 
 exports.getLogin = (req, res, next) => {
   //const isLoggedIn =
@@ -79,9 +89,25 @@ exports.postSignup = (req, res, next) => {
         })
         .then(() => {
           res.redirect("/login");
+          return transporter.sendMail({
+            to: email,
+            from: "shop@lukanodejs.com",
+            subject: "Nice Nodemailer test",
+            html: "<h1>You successfully signed up</h1>",
+          });
+        })
+        .catch((err) => {
+          console.log(err);
         });
     })
     .catch((err) => {
       console.log(err);
     });
+};
+
+exports.getReset = (req, res, next) => {
+  res.render("auth/reset", {
+    title: "Reset Password",
+    path: "/reset",
+  });
 };

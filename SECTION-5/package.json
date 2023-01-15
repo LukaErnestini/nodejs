@@ -23,6 +23,7 @@
     "mongodb": "^4.13.0",
     "mongoose": "^6.8.3",
     "mysql2": "^2.3.3",
+    "nodemailer": "^6.9.0",
     "pug": "^3.0.2",
     "sequelize": "^6.28.0",
     "tiny-csrf": "^1.1.3"
