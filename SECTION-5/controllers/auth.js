@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.mailtrap.io",
@@ -109,5 +110,45 @@ exports.getReset = (req, res, next) => {
   res.render("auth/reset", {
     title: "Reset Password",
     path: "/reset",
+  });
+};
+
+exports.postReset = (req, res, next) => {
+  crypto.randomBytes(32, (err, buffer) => {
+    if (err) {
+      console.log(err);
+      return res.redirect("/reset");
+    }
+    const token = buffer.toString("hex");
+    User.findOne({ email: req.body.email })
+      .then((user) => {
+        if (!user) {
+          req.flash("error", "No account with that email found.");
+          return res.redirect("/reset");
+        }
+        user.resetToken = token;
+        user.resetTokenExpiration = Date.now() + 3600000;
+        return user.save();
+      })
+      .then((user) => {
+        const resetUrl = "localhost:3000/reset/" + user.resetToken;
+        req.flash(
+          "info",
+          "An email with the link to reset the password has been dispatched."
+        );
+        res.redirect("/reset");
+        transporter.sendMail({
+          to: req.body.email,
+          from: "shop@lukanodejs.com",
+          subject: "Password reset requested",
+          html: `
+          <p>A request to reset the password of the account associated with this email has been made.</p>
+          <p>Click this link to reset the password: <a href='${resetUrl}'>link</a></p>
+          `,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   });
 };

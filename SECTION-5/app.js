@@ -62,6 +62,7 @@ app.use((req, res, next) => {
   if (req.method === "GET") res.locals.csrfToken = req.csrfToken();
   res.locals.isAuthenticated = req.session.isLoggedIn;
   res.locals.errorMessage = req.flash("error")[0];
+  res.locals.infoMessage = req.flash("info")[0];
   next();
 });
 
