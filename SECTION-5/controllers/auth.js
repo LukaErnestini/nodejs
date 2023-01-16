@@ -33,6 +33,7 @@ exports.postLogin = (req, res, next) => {
       path: "/login",
       errorMessage: errorMessage,
       oldInput: { email, password },
+      validationErrorParam: validationError ? validationError.param : undefined,
     });
   }
   User.findOne({ email: email })
