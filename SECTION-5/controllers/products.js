@@ -40,7 +40,7 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.getProductsAdmin = (req, res, next) => {
-  Product.find()
+  Product.find({ userId: req.user._id })
     .then((products) => {
       res.render("admin/products", {
         prods: products,
@@ -110,24 +110,32 @@ exports.postEditProduct = (req, res, next) => {
 
   Product.findById(prodId)
     .then((product) => {
+      if (!product.userId.equals(req.user._id)) {
+        console.log("Unauthorized edit attempt");
+        return res.redirect("/");
+      }
       product.title = title;
       product.imageUrl = imageUrl;
       product.description = description;
       product.price = price;
-      return product.save();
+      return product.save().then(() => {
+        console.log("Updated product");
+        res.redirect("/admin/products");
+      });
     })
-    .then(() => {
-      console.log("Updated product");
-      res.redirect("/admin/products");
-    })
+
     .catch((err) => {});
 };
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.findByIdAndDelete(prodId)
-    .then(() => {
-      console.log("Destroyed product");
+  Product.deleteOne({ _id: prodId, userId: req.user._id })
+    .then((result) => {
+      if (result.deletedCount) console.log("Destroyed product " + prodId);
+      else
+        console.log(
+          `User ${req.user._id} attempted to delete product ${prodId} but failed`
+        );
       res.redirect("/admin/products");
     })
     .catch((err) => {
