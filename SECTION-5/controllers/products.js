@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const { validationResult } = require("express-validator");
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -59,7 +60,18 @@ exports.postAddProduct = (req, res, next) => {
   const description = req.body.description;
   const price = req.body.price;
   const userId = req.user;
-  console.log(userId);
+  const validationError = validationResult(req).array()[0];
+  const errorMessage = validationError ? validationError.msg : undefined;
+  if (validationError) {
+    return res.status(422).render("admin/edit-product", {
+      title: "Add Product",
+      path: "/admin/add-product",
+      editing: "false",
+      oldInput: { title, imageUrl, description, price },
+      errorMessage: errorMessage,
+      validationErrorParam: validationError ? validationError.param : undefined,
+    });
+  }
   const product = new Product({
     title,
     price,
@@ -107,7 +119,27 @@ exports.postEditProduct = (req, res, next) => {
   const description = req.body.description;
   const price = req.body.price;
   const prodId = req.params.productId;
-
+  const validationError = validationResult(req).array()[0];
+  const errorMessage = validationError ? validationError.msg : undefined;
+  if (validationError) {
+    return Product.findById(prodId)
+      .then((product) => {
+        res.status(422).render("admin/edit-product", {
+          title: "Edit Product",
+          path: "/admin/edit-product",
+          product: product,
+          editing: "true",
+          oldInput: { title, imageUrl, description, price },
+          errorMessage: errorMessage,
+          validationErrorParam: validationError
+            ? validationError.param
+            : undefined,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
   Product.findById(prodId)
     .then((product) => {
       if (!product.userId.equals(req.user._id)) {

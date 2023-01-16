@@ -20,6 +20,7 @@ router.post(
     check("email")
       .isEmail()
       .withMessage("Invalid email.")
+      .normalizeEmail()
       .custom((value, { req }) => {
         // if (value === "test@test.com")
         //   throw new Error("Example of custom validator triggered!");
@@ -31,8 +32,7 @@ router.post(
             return Promise.reject("That email is already registered.");
           }
         });
-      })
-      .normalizeEmail(),
+      }),
     body(
       "password",
       "Password should be minimum 5 characters, only alphanumeric."

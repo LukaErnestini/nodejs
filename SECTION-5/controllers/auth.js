@@ -39,7 +39,7 @@ exports.postLogin = (req, res, next) => {
   User.findOne({ email: email })
     .then((user) => {
       if (!user) {
-        res.status(401).render("auth/login", {
+        return res.status(401).render("auth/login", {
           title: "Login",
           path: "/login",
           errorMessage: "Invalid email or password.",
