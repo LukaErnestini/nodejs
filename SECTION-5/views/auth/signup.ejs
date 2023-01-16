@@ -14,16 +14,19 @@
             <div class="form-control">
                 <label for="email">Email</label>
                 <input type="email" name="email" id="email"
+                    class="<% if (typeof validationErrorParam !== 'undefined' && validationErrorParam === 'email') { %>invalid<% } %>"
                     <% if (typeof oldInput !== 'undefined' && oldInput) { %>value="<%= oldInput.email %>" <% } %>>
             </div>
             <div class="form-control">
                 <label for="password">Password</label>
                 <input type="password" name="password" id="password"
+                    class="<% if (typeof validationErrorParam !== 'undefined' && validationErrorParam === 'password') { %>invalid<% } %>"
                     <% if (typeof oldInput !== 'undefined' && oldInput) { %>value="<%= oldInput.password %>" <% } %>>
             </div>
             <div class="form-control">
                 <label for="confirmPassword">Confirm Password</label>
                 <input type="password" name="confirmPassword" id="confirmPassword"
+                    class="<% if (typeof validationErrorParam !== 'undefined' && validationErrorParam === 'password') { %>invalid<% } %>"
                     <% if (typeof oldInput !== 'undefined' && oldInput) { %>value="<%= oldInput.confirmPassword %>"
                     <% } %>>
             </div>

@@ -95,6 +95,7 @@ exports.postSignup = (req, res, next) => {
       path: "/signup",
       errorMessage: errorMessage,
       oldInput: { email, password, confirmPassword },
+      validationErrorParam: validationError ? validationError.param : undefined,
     });
   }
 
