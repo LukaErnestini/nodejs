@@ -61,8 +61,8 @@ exports.postAddProduct = (req, res, next) => {
   const price = req.body.price;
   const userId = req.user;
   const validationError = validationResult(req).array()[0];
-  const errorMessage = validationError ? validationError.msg : undefined;
   if (validationError) {
+    const errorMessage = validationError ? validationError.msg : undefined;
     return res.status(422).render("admin/edit-product", {
       title: "Add Product",
       path: "/admin/add-product",
@@ -120,8 +120,8 @@ exports.postEditProduct = (req, res, next) => {
   const price = req.body.price;
   const prodId = req.params.productId;
   const validationError = validationResult(req).array()[0];
-  const errorMessage = validationError ? validationError.msg : undefined;
   if (validationError) {
+    const errorMessage = validationError ? validationError.msg : undefined;
     return Product.findById(prodId)
       .then((product) => {
         res.status(422).render("admin/edit-product", {
@@ -155,7 +155,6 @@ exports.postEditProduct = (req, res, next) => {
         res.redirect("/admin/products");
       });
     })
-
     .catch((err) => {});
 };
 
