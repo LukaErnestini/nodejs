@@ -1,5 +1,10 @@
 const express = require("express");
-const validators = require("../middleware/validators");
+const {
+  title,
+  imageURL,
+  price,
+  description,
+} = require("../middleware/validators");
 
 const router = express.Router();
 
@@ -10,12 +15,7 @@ router.get("/add-product", isAuth, productsController.getAddProduct);
 router.post(
   "/add-product",
   isAuth,
-  [
-    validators.title,
-    validators.imageURL,
-    validators.price,
-    validators.description,
-  ],
+  [title, imageURL, price, description],
   productsController.postAddProduct
 );
 router.get("/products", isAuth, productsController.getProductsAdmin);
@@ -27,12 +27,7 @@ router.get(
 router.post(
   "/edit-product/:productId",
   isAuth,
-  [
-    validators.title,
-    validators.imageURL,
-    validators.price,
-    validators.description,
-  ],
+  [title, imageURL, price, description],
   productsController.postEditProduct
 );
 router.post(
