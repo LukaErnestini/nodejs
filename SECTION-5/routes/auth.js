@@ -9,7 +9,7 @@ const User = require("../models/user");
 router.get("/login", authController.getLogin);
 router.post(
   "/login",
-  [body("email").isEmail().withMessage("Invalid email.")],
+  [body("email").isEmail().withMessage("Invalid email.").normalizeEmail()],
   authController.postLogin
 );
 router.post("/logout", authController.postLogout);
@@ -31,7 +31,8 @@ router.post(
             return Promise.reject("That email is already registered.");
           }
         });
-      }),
+      })
+      .normalizeEmail(),
     body(
       "password",
       "Password should be minimum 5 characters, only alphanumeric."
