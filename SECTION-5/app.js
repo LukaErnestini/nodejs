@@ -59,7 +59,9 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  if (req.method === "GET") res.locals.csrfToken = req.csrfToken();
+  //if (req.method === "GET")
+  // EDITED THE MODULE TO MAKE THE BELOW LINE WORK ON ALL REQ METHODS
+  res.locals.csrfToken = req.csrfToken();
   res.locals.isAuthenticated = req.session.isLoggedIn;
   res.locals.errorMessage = req.flash("error")[0];
   res.locals.infoMessage = req.flash("info")[0];

@@ -2,6 +2,7 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
+const { validationResult } = require("express-validator");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.mailtrap.io",
@@ -24,6 +25,15 @@ exports.getLogin = (req, res, next) => {
 exports.postLogin = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
+  const validationError = validationResult(req).array()[0];
+  const errorMessage = validationError ? validationError.msg : undefined;
+  if (validationError) {
+    return res.status(422).render("auth/login", {
+      title: "Login",
+      path: "/login",
+      errorMessage: errorMessage,
+    });
+  }
   User.findOne({ email: email })
     .then((user) => {
       if (!user) {
@@ -67,39 +77,41 @@ exports.getSignup = (req, res, next) => {
 exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  const confirmPass = req.body.confirmPassword;
-  User.findOne({ email: email })
-    .then((userDoc) => {
-      if (userDoc) {
-        req.flash("error", "That email is already taken.");
-        return res.redirect("/signup");
-      }
-      return bcrypt
-        .hash(password, 12)
-        .then((hashedPassword) => {
-          const user = new User({
-            email: email,
-            username: email,
-            password: hashedPassword,
-            cart: {
-              items: [],
-            },
-            orders: [],
-          });
-          return user.save();
-        })
-        .then(() => {
-          res.redirect("/login");
-          return transporter.sendMail({
-            to: email,
-            from: "shop@lukanodejs.com",
-            subject: "Nice Nodemailer test",
-            html: "<h1>You successfully signed up</h1>",
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+  const validationError = validationResult(req).array()[0];
+  const errorMessage = validationError ? validationError.msg : undefined;
+  if (validationError) {
+    return res.status(422).render("auth/signup", {
+      title: "Signup",
+      path: "/signup",
+      errorMessage: errorMessage,
+    });
+  }
+
+  bcrypt
+    .hash(password, 12)
+    .then((hashedPassword) => {
+      const user = new User({
+        email: email,
+        username: email,
+        password: hashedPassword,
+        cart: {
+          items: [],
+        },
+        orders: [],
+      });
+      return user.save();
+    })
+    .then(() => {
+      res.redirect("/login");
+      return transporter.sendMail({
+        to: email,
+        from: "shop@lukanodejs.com",
+        subject: "Nice Nodemailer test",
+        html: "<h1>You successfully signed up</h1>",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
     })
     .catch((err) => {
       console.log(err);
