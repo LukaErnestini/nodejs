@@ -42,23 +42,6 @@ app.use(
 app.use(csrf("123456789iamasecrethfjsneuchlook"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(flash());
-
-app.use((req, res, next) => {
-  if (req.session.isLoggedIn) {
-    User.findById(req.session.user._id)
-      .then((user) => {
-        if (!user) return next();
-        req.user = user;
-        next();
-      })
-      .catch((err) => {
-        throw new Error(err);
-      });
-  } else {
-    next();
-  }
-});
-
 app.use((req, res, next) => {
   //if (req.method === "GET")
   // EDITED THE MODULE TO MAKE THE BELOW LINE WORK ON ALL REQ METHODS
@@ -69,6 +52,21 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  if (req.session.isLoggedIn) {
+    User.findById(req.session.user._id)
+      .then((user) => {
+        if (!user) return next();
+        req.user = user;
+        next();
+      })
+      .catch((err) => {
+        next(new Error(err));
+      });
+  } else {
+    next();
+  }
+});
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
@@ -76,8 +74,13 @@ app.get("/500", errorController.get500);
 app.use(errorController.get404);
 // special express error handling middleware
 app.use((error, req, res, next) => {
-  res.redirect("/500");
+  res.render("error", {
+    statusCode: 500,
+    title: "Error",
+    path: "",
+  });
 });
+
 mongoose
   .connect(MONGODB_URI)
   .then(() => {
