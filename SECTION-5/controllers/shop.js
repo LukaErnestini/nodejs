@@ -10,11 +10,22 @@ exports.getCart = (req, res, next) => {
   req.user
     .populate("cart.items.productId")
     .then((user) => {
+      console.log(user.cart);
+      const existingItems = user.cart.items.filter(
+        (item) => item.productId !== null
+      );
       res.render("shop/cart", {
         title: "Cart",
         path: "/cart",
-        products: user.cart.items,
+        products: existingItems,
       });
+      if (existingItems !== user.cart.items) {
+        console.log(
+          "Purging nonexistent items in the cart of user " + req.user._id
+        );
+        req.user.cart.items = existingItems;
+        return req.user.save();
+      }
     })
     .catch((err) => {
       const error = new Error(err);
