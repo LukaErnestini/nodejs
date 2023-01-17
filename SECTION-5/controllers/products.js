@@ -3,15 +3,32 @@ const fileHelper = require("../util/file");
 const Product = require("../models/product");
 const { validationResult } = require("express-validator");
 
+const ITEMS_PER_PAGE = 2;
+
 exports.getProducts = (req, res, next) => {
+  const page = +req.query.page || 1;
+  let totalProducts;
   Product.find()
-    // .select("title price -_id")
-    // .populate("userId", "username")
+    .countDocuments()
+    .then((n) => {
+      totalProducts = n;
+      return Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then((products) => {
       res.render("shop/product-list", {
         prods: products,
         title: "All Products",
         path: "/products",
+        totalProducts,
+        prodsPerPage: ITEMS_PER_PAGE,
+        hasNextPage: ITEMS_PER_PAGE * page < totalProducts,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        currentPage: page,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalProducts / ITEMS_PER_PAGE),
       });
     })
     .catch((err) => {
@@ -47,12 +64,29 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.getProductsAdmin = (req, res, next) => {
+  const page = +req.query.page || 1;
+  let totalProducts;
   Product.find({ userId: req.user._id })
+    .countDocuments()
+    .then((n) => {
+      totalProducts = n;
+      return Product.find({ userId: req.user._id })
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then((products) => {
       res.render("admin/products", {
         prods: products,
         title: "All Products",
         path: "/admin/products",
+        totalProducts,
+        prodsPerPage: ITEMS_PER_PAGE,
+        hasNextPage: ITEMS_PER_PAGE * page < totalProducts,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        currentPage: page,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalProducts / ITEMS_PER_PAGE),
       });
     })
     .catch((err) => {
