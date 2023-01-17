@@ -61,24 +61,35 @@ exports.getProductsAdmin = (req, res, next) => {
 };
 
 exports.postAddProduct = (req, res, next) => {
-  tempRemove.cre;
   const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
+  const image = req.file;
   const description = req.body.description;
   const price = req.body.price;
   const userId = req.user;
   const validationError = validationResult(req).array()[0];
+  if (!image) {
+    return res.status(422).render("admin/edit-product", {
+      title: "Add Product",
+      path: "/admin/add-product",
+      editing: "false",
+      oldInput: { title, image, description, price },
+      errorMessage: "Attached file is not an image",
+      validationErrorParam: validationError ? validationError.param : undefined,
+    });
+  }
+  console.log(image);
   if (validationError) {
     const errorMessage = validationError ? validationError.msg : undefined;
     return res.status(422).render("admin/edit-product", {
       title: "Add Product",
       path: "/admin/add-product",
       editing: "false",
-      oldInput: { title, imageUrl, description, price },
+      oldInput: { title, description, price },
       errorMessage: errorMessage,
       validationErrorParam: validationError ? validationError.param : undefined,
     });
   }
+  const imageUrl = image.path;
   const product = new Product({
     // _id: tempRemove.Types.ObjectId("63c25486cd3f0197677c919b"),
     title,
@@ -98,7 +109,7 @@ exports.postAddProduct = (req, res, next) => {
       //   title: "Add Product",
       //   path: "/admin/add-product",
       //   editing: "false",
-      //   oldInput: { title, imageUrl, description, price },
+      //   oldInput: { title, image, description, price },
       //   errorMessage: "Database operation failed, please try again",
       // });
       //res.redirect("/500");
@@ -135,7 +146,7 @@ exports.getEditProduct = (req, res, next) => {
 
 exports.postEditProduct = (req, res, next) => {
   const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
+  const image = req.file;
   const description = req.body.description;
   const price = req.body.price;
   const prodId = req.params.productId;
@@ -149,7 +160,7 @@ exports.postEditProduct = (req, res, next) => {
           path: "/admin/edit-product",
           product: product,
           editing: "true",
-          oldInput: { title, imageUrl, description, price },
+          oldInput: { title, description, price },
           errorMessage: errorMessage,
           validationErrorParam: validationError
             ? validationError.param
@@ -169,7 +180,7 @@ exports.postEditProduct = (req, res, next) => {
         return res.redirect("/");
       }
       product.title = title;
-      product.imageUrl = imageUrl;
+      if (image) product.imageUrl = image.path;
       product.description = description;
       product.price = price;
       return product.save().then(() => {
