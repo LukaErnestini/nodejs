@@ -1,5 +1,6 @@
 const Product = require("../models/product");
 const { validationResult } = require("express-validator");
+const tempRemove = require("mongoose");
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -55,6 +56,7 @@ exports.getProductsAdmin = (req, res, next) => {
 };
 
 exports.postAddProduct = (req, res, next) => {
+  tempRemove.cre;
   const title = req.body.title;
   const imageUrl = req.body.imageUrl;
   const description = req.body.description;
@@ -73,6 +75,7 @@ exports.postAddProduct = (req, res, next) => {
     });
   }
   const product = new Product({
+    _id: tempRemove.Types.ObjectId("63c25486cd3f0197677c919b"),
     title,
     price,
     description,
@@ -86,7 +89,14 @@ exports.postAddProduct = (req, res, next) => {
       res.redirect("/admin/products");
     })
     .catch((err) => {
-      console.log(err);
+      // return res.status(500).render("admin/edit-product", {
+      //   title: "Add Product",
+      //   path: "/admin/add-product",
+      //   editing: "false",
+      //   oldInput: { title, imageUrl, description, price },
+      //   errorMessage: "Database operation failed, please try again",
+      // });
+      res.redirect("/500");
     });
 };
 

@@ -1,7 +1,16 @@
 <%- include('includes/head.ejs') %>
-  </head>
+</head>
 
-  <body>
-    <%- include('includes/navigation.ejs') %>
-      <h1>Page Not Found!</h1>
-      <%- include('includes/end.ejs') %>
+<body>
+  <%- include('includes/navigation.ejs') %>
+  <% if (typeof statusCode !== 'undefined') { %>
+  <h1><%= statusCode %></h1>
+  <% } %>
+  <% if (typeof errMessage !== 'undefined') { %>
+  <h2><%= errMessage %>.</h2>
+  <% } else { %>
+  <h1>Some error occured!</h1>
+  <% } %>
+
+  <p>We are now aware of this error and are working on fixing it. Sorry for the inconvenience.</p>
+  <%- include('includes/end.ejs') %>
