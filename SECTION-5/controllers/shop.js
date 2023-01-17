@@ -1,4 +1,9 @@
+const fs = require("fs");
+const { OrderedBulkOperation } = require("mongodb");
+const path = require("path");
+
 const Product = require("../models/product.js");
+const Order = require("../models/order");
 
 exports.getCart = (req, res, next) => {
   req.user
@@ -89,6 +94,30 @@ exports.postOrder = (req, res, next) => {
     .createOrder()
     .then(() => {
       res.redirect("/orders");
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(error);
+    });
+};
+
+exports.getInvoice = (req, res, next) => {
+  const orderId = req.params.orderId;
+  Order.findById(orderId)
+    .then((order) => {
+      if (!order) return next(new Error("No order found"));
+      if (!order.user.userId.equals(req.user._id)) {
+        return next(new Error("Unauthorized"));
+      }
+      const invoiceName = "invoice-" + orderId + ".pdf";
+      const invoicePath = path.join("data", "invoices", invoiceName);
+      fs.readFile(invoicePath, (err, data) => {
+        if (err) return next(err);
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`);
+        res.send(data);
+      });
     })
     .catch((err) => {
       const error = new Error(err);
