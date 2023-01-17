@@ -1,5 +1,5 @@
 const { check, body } = require("express-validator");
-const User = require;
+const User = require("../models/user");
 
 // Validate the title field
 exports.title = body("title")
