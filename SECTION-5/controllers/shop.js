@@ -1,6 +1,7 @@
 const fs = require("fs");
-const { OrderedBulkOperation } = require("mongodb");
 const path = require("path");
+
+const PDFDocument = require("pdfkit");
 
 const Product = require("../models/product.js");
 const Order = require("../models/order");
@@ -112,6 +113,33 @@ exports.getInvoice = (req, res, next) => {
       }
       const invoiceName = "invoice-" + orderId + ".pdf";
       const invoicePath = path.join("data", "invoices", invoiceName);
+
+      const pdfDoc = new PDFDocument();
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`);
+      if (fs.existsSync(invoicePath)) {
+        const file = fs.createReadStream(invoicePath);
+        return file.pipe(res);
+      } else {
+        console.log(`Invoice ${orderId} being created ...`);
+        pdfDoc.pipe(fs.createWriteStream(invoicePath));
+        pdfDoc.pipe(res);
+
+        pdfDoc.fontSize(26).text("Invoice", { underline: true });
+        pdfDoc.fontSize(12).text("-------------------");
+        let total = 0;
+        order.items.forEach((p) => {
+          //pdfDoc.image(p.product.imageUrl, 50, pdfDoc.y, { width: 100 });
+          pdfDoc.text(
+            `${p.product.title} - ${p.quantity} x ${p.product.price} EUR`
+          );
+          total += p.quantity * p.product.price;
+        });
+        pdfDoc.fontSize(12).text("-------------------");
+        pdfDoc.fontSize(18).text(`Total price: ${total} EUR`);
+
+        pdfDoc.end();
+      }
       // Reads whole file into memory. For bigger files this is not okay. We should be streaming. This is PRELOADING
       // fs.readFile(invoicePath, (err, data) => {
       //   if (err) return next(err);
@@ -119,10 +147,6 @@ exports.getInvoice = (req, res, next) => {
       //   res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`);
       //   res.send(data);
       // });
-      const file = fs.createReadStream(invoicePath);
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`);
-      file.pipe(res);
     })
     .catch((err) => {
       const error = new Error(err);
