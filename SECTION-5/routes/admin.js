@@ -30,10 +30,6 @@ router.post(
   [title, price, description],
   productsController.postEditProduct
 );
-router.post(
-  "/delete-product/:productId",
-  isAuth,
-  productsController.postDeleteProduct
-);
+router.delete("/product/:productId", isAuth, productsController.delete);
 
 module.exports = router;

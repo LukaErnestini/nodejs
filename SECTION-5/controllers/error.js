@@ -1,5 +1,5 @@
 exports.get404 = (req, res, next) => {
-  res.render("error", {
+  res.status(404).render("error", {
     statusCode: 404,
     title: "Page not found",
     errMessage: "Page not found",

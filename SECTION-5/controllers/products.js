@@ -234,7 +234,7 @@ exports.postEditProduct = (req, res, next) => {
     });
 };
 
-exports.postDeleteProduct = (req, res, next) => {
+exports.delete = (req, res, next) => {
   const prodId = req.params.productId;
   Product.findById(prodId)
     .then((prod) => {
@@ -243,16 +243,17 @@ exports.postDeleteProduct = (req, res, next) => {
       return Product.deleteOne({ _id: prodId, userId: req.user._id });
     })
     .then((result) => {
-      if (result.deletedCount) console.log("Destroyed product " + prodId);
-      else
+      if (result.deletedCount) {
+        console.log("Destroyed product " + prodId);
+        res.status(200).json({ message: "Success!" });
+      } else {
         console.log(
           `User ${req.user._id} attempted to delete product ${prodId} but failed`
         );
-      res.redirect("/admin/products");
+        res.json({ message: "Deleting product failed." });
+      }
     })
     .catch((err) => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      next(error);
+      res.status(500).json({ message: "Deleting product failed." });
     });
 };
