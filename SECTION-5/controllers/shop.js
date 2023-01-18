@@ -2,6 +2,9 @@ const fs = require("fs");
 const path = require("path");
 
 const PDFDocument = require("pdfkit");
+const stripe = require("stripe")(
+  "sk_test_51MRX0QC22pfUbSYJy4dJrrUzKGLUahoCQbVyZXfRRo096l92ovVm8RDf08PlYZdam9S5OGuvghgVoOv1PBJol9Ck0072xAlLAO"
+);
 
 const Product = require("../models/product.js");
 const Order = require("../models/order");
@@ -67,10 +70,68 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.getCheckout = (req, res, next) => {
-  res.render("shop/checkout", {
-    title: "Checkout",
-    path: "/checkout",
+  req.user.populate("cart.items.productId").then((user) => {
+    const products = user.cart.items;
+    let total = 0;
+    products.forEach((p) => {
+      total += p.quantity * p.productId.price;
+    });
+    res.render("shop/checkout", {
+      title: "Checkout",
+      path: "/checkout",
+      products,
+      total,
+    });
   });
+};
+
+exports.getSuccess = (req, res, next) => {
+  req.user
+    .createOrder()
+    .then(() => {
+      res.redirect("/orders");
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(error);
+    });
+};
+
+exports.createCheckoutSession = (req, res, next) => {
+  const YOUR_DOMAIN = "http://localhost:3000";
+
+  req.user
+    .populate("cart.items.productId")
+    .then((user) => {
+      const products = user.cart.items;
+      const line_items = products.map((p) => {
+        return {
+          price_data: {
+            product_data: {
+              name: p.productId.title,
+            },
+            unit_amount: p.productId.price * 100,
+            currency: "EUR",
+          },
+          quantity: p.quantity,
+        };
+      });
+      return stripe.checkout.sessions.create({
+        line_items,
+        mode: "payment",
+        success_url: `${YOUR_DOMAIN}/checkout/success`,
+        cancel_url: `${YOUR_DOMAIN}/checkout/cancel`,
+      });
+    })
+    .then((session) => {
+      res.redirect(303, session.url);
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(error);
+    });
 };
 
 exports.getIndex = (req, res, next) => {
