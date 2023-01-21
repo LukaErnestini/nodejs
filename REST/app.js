@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const multer = require("multer");
 
+const { mongo_uri } = require("./config");
 const feedRoutes = require("./routes/feed");
 const authRoutes = require("./routes/auth");
 
@@ -56,9 +57,7 @@ app.use((error, req, res, next) => {
 
 mongoose.set("strictQuery", true);
 mongoose
-  .connect(
-    "mongodb+srv://adminluka:wDxbjqiP0HBjtqfpjUI0@cluster0.iqwepvj.mongodb.net/messages"
-  )
+  .connect(mongo_uri)
   .then((result) => {
     app.listen(8080);
   })

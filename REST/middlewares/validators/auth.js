@@ -1,7 +1,7 @@
 const { check, body } = require("express-validator");
 const User = require("../../models/user");
 
-exports.email = body("email")
+exports.emailSignup = body("email")
   .isEmail()
   .withMessage("Please enter a valid email.")
   .normalizeEmail()
@@ -14,6 +14,10 @@ exports.email = body("email")
         next(err);
       });
   });
-
 exports.password = body("password").trim().isLength({ min: 5 });
 exports.name = body("name").trim().not().isEmpty();
+
+exports.emailLogin = body("email")
+  .isEmail()
+  .withMessage("Please enter a valid email.")
+  .normalizeEmail();
