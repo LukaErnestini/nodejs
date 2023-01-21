@@ -97,10 +97,7 @@ exports.updatePost = (req, res, next) => {
   const title = req.body.title;
   const content = req.body.content;
   let imageUrl = req.body.image || req.file.path || undefined;
-  // console.log(req.body.image);
-  // console.log(req.file.path);
   if (imageUrl) imageUrl = imageUrl.replace("\\", "/");
-  // console.log(imageUrl);
   if (!imageUrl) throwError(422, "No file picked");
   Post.findById(postId)
     .then((post) => {
@@ -124,7 +121,9 @@ exports.removePost = (req, res, next) => {
   Post.findById(postId)
     .then((post) => {
       if (!post) throwError(404, "Could not find post");
-      //check loggedin user
+      //return User.findById(req.userId);
+      if (req.userId.toString() !== post.creator.toString())
+        throwError(401, "Unauthorized to delete this resource.");
       clearImage(post.imageUrl);
       return Post.findByIdAndRemove(postId);
     })
