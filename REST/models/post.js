@@ -16,8 +16,9 @@ const postSchema = new Schema(
       required: true,
     },
     creator: {
-      type: Schema.Types.Mixed,
+      type: Schema.Types.ObjectId,
       required: true,
+      ref: "User",
     },
   },
   {
