@@ -10,7 +10,9 @@ const User = require("../models/user");
 const clearImage = (filePath) => {
   filePath = path.join(__dirname, "..", filePath);
   try {
-    fs.unlink(filePath, (err) => console.log(err));
+    fs.unlink(filePath, (err) => {
+      if (err) console.log(err);
+    });
   } catch (error) {
     console.log(error);
   }
@@ -102,6 +104,8 @@ exports.updatePost = (req, res, next) => {
   Post.findById(postId)
     .then((post) => {
       if (!post) throwError(404, "Could not find post");
+      if (req.userId.toString() !== post.creator.toString())
+        throwError(401, "Unauthorized to delete this resource.");
       if (imageUrl !== post.imageUrl) clearImage(post.imageUrl);
       post.title = title;
       post.content = content;
@@ -127,7 +131,14 @@ exports.removePost = (req, res, next) => {
       clearImage(post.imageUrl);
       return Post.findByIdAndRemove(postId);
     })
-    .then((result) => {
+    .then(() => {
+      return User.findById(req.userId);
+    })
+    .then((user) => {
+      user.posts.pull(postId);
+      return user.save();
+    })
+    .then(() => {
       res.status(200).json({ message: "Deleted post." });
     })
     .catch((err) => {
