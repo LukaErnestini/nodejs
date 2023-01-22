@@ -21,3 +21,5 @@ exports.emailLogin = body("email")
   .isEmail()
   .withMessage("Please enter a valid email.")
   .normalizeEmail();
+
+exports.status = body("status").trim().not().isEmpty();
