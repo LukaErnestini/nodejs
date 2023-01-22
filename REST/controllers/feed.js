@@ -26,6 +26,7 @@ exports.getPosts = async (req, res, next) => {
     const totalItems = await Post.find().countDocuments();
     const posts = await Post.find()
       .populate("creator")
+      .sort({ createdAt: -1 })
       .skip((currentPage - 1) * perPage)
       .limit(perPage);
     res.status(200).json({ message: "Fetched posts.", posts, totalItems });
@@ -99,14 +100,20 @@ exports.updatePost = (req, res, next) => {
   if (imageUrl) imageUrl = imageUrl.replace("\\", "/");
   if (!imageUrl) throwError(422, "No file picked");
   Post.findById(postId)
+    .populate("creator")
     .then((post) => {
       if (!post) throwError(404, "Could not find post");
-      if (req.userId.toString() !== post.creator.toString())
-        throwError(401, "Unauthorized to delete this resource.");
+      console.log(post.creator._id.toString());
+      console.log(req.userId.toString());
+      console.log(req.userId.toString() === post.creator._id.toString());
+      console.log(req.userId === post.creator._id.toString());
+      if (req.userId.toString() !== post.creator._id.toString())
+        throwError(401, "Unauthorized to edit this resource.");
       if (imageUrl !== post.imageUrl) clearImage(post.imageUrl);
       post.title = title;
       post.content = content;
       post.imageUrl = imageUrl;
+      io.getIO().emit("posts", { action: "update", post });
       return post.save();
     })
     .then((result) => {
@@ -133,6 +140,7 @@ exports.removePost = (req, res, next) => {
     })
     .then((user) => {
       user.posts.pull(postId);
+      io.getIO().emit("posts", { action: "delete", post: postId });
       return user.save();
     })
     .then(() => {
