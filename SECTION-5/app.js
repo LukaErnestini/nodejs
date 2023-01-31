@@ -9,6 +9,7 @@ const csrf = require("tiny-csrf");
 const cookieParser = require("cookie-parser");
 const flash = require("connect-flash");
 const multer = require("multer");
+const helmet = require("helmet");
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
@@ -45,6 +46,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 // MIDDLEWARES - these run when we get incomming request
+app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
