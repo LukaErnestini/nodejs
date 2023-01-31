@@ -1,3 +1,4 @@
+const fs = require("fs");
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
@@ -11,6 +12,7 @@ const flash = require("connect-flash");
 const multer = require("multer");
 const helmet = require("helmet");
 const compression = require("compression");
+const morgan = require("morgan");
 
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
@@ -46,9 +48,15 @@ const fileFilter = (req, file, cb) => {
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
+const accesLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log"),
+  { flags: "a" }
+);
+
 // MIDDLEWARES - these run when we get incomming request
 app.use(helmet());
 app.use(compression());
+app.use(morgan("combined", { stream: accesLogStream }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
