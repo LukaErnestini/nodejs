@@ -1,0 +1,9 @@
+{
+  "env": {
+    "MONGO_USER": "adminluka",
+    "MONGO_PASSWORD": "wDxbjqiP0HBjtqfpjUI0",
+    "MONGO_DATABASE": "shop",
+    "STRIPE_KEY": "sk_test_51MRX0QC22pfUbSYJy4dJrrUzKGLUahoCQbVyZXfRRo096l92ovVm8RDf08PlYZdam9S5OGuvghgVoOv1PBJol9Ck0072xAlLAO",
+    "PORT": 3000
+  }
+}
